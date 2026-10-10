@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Attendance - SmartAcad
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fb;
+            color: #333;
+        }
+
+        .header {
+            background-color: #1e3a5f;
+            color: white;
+            padding: 20px 40px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .logout {
+            background-color: white;
+            color: #1e3a5f;
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1250px;
+            margin: 30px auto;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-bottom: 20px;
+            background-color: #1e3a5f;
+            color: white;
+            text-decoration: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .section {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow:
+                0 2px 8px rgba(0,0,0,0.08);
+            overflow-x: auto;
+        }
+
+        .section h2 {
+            margin-top: 0;
+            color: #1e3a5f;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 22px;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 0;
+            padding: 11px 13px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            font: inherit;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #3976b9;
+            box-shadow: 0 0 0 3px rgba(57, 118, 185, 0.16);
+        }
+
+        .search-button,
+        .clear-search {
+            display: inline-block;
+            padding: 10px 16px;
+            border: 0;
+            border-radius: 7px;
+            background: #1e3a5f;
+            color: white;
+            font: inherit;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .clear-search {
+            background: #e8eef5;
+            color: #1e3a5f;
+        }
+
+        .course-group {
+            margin-top: 22px;
+            overflow: hidden;
+            border: 1px solid #dbe3ec;
+            border-radius: 9px;
+        }
+
+        .course-title {
+            margin: 0;
+            padding: 13px 15px;
+            background: #eaf1f8;
+            color: #1e3a5f;
+            font-size: 17px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #1e3a5f;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f7f9fc;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 25px;
+        }
+
+        .pagination a,
+        .pagination span {
+            padding: 8px 13px;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        .pagination a {
+            background-color: #1e3a5f;
+            color: white;
+        }
+
+        .current-page {
+            background-color: #e5eaf0;
+            color: #1e3a5f;
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: 95%;
+            }
+
+            .search-form {
+                flex-wrap: wrap;
+            }
+
+            .section {
+                padding: 16px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <div class="header">
+
+        <h1>
+            SmartAcad
+        </h1>
+
+        <a
+            href="{% url 'logout' %}"
+            class="logout"
+        >
+            Logout
+        </a>
+
+    </div>
+
+
+    <div class="container">
+
+        <a
+            href="{% url 'academic_admin_dashboard' %}"
+            class="back-button"
+        >
+            ← Back to Dashboard
+        </a>
+
+
+        <div class="section">
+
+            <h2>
+                Attendance Records
+            </h2>
+
+            <form class="search-form" method="get">
+                <input
+                    class="search-input"
+                    type="search"
+                    name="search"
+                    value="{{ search_query }}"
+                    placeholder="Search by student name, student ID, course code, or course name"
+                    aria-label="Search attendance by student or course"
+                >
+                <button class="search-button" type="submit">Search</button>
+                {% if search_query %}
+                    <a class="clear-search" href="{% url 'academic_admin_attendance' %}">
+                        Clear
+                    </a>
+                {% endif %}
+            </form>
+
+            {% if attendance_courses %}
+
+                {% for course in attendance_courses %}
+                    <div class="course-group">
+                        <h3 class="course-title">
+                            {{ course.course_name }} ({{ course.course_code }})
+                        </h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Student ID</th>
+                                    <th>Present</th>
+                                    <th>Total Classes</th>
+                                    <th>Attendance %</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for summary in course.students %}
+                                    <tr>
+                                        <td>{{ summary.student.full_name }}</td>
+                                        <td>{{ summary.student.student_id }}</td>
+                                        <td>{{ summary.present }}</td>
+                                        <td>{{ summary.total_classes }}</td>
+                                        <td>{{ summary.attendance_percentage|floatformat:1 }}%</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endfor %}
+
+                {% if attendance_courses.paginator.num_pages > 1 %}
+                    <div class="pagination">
+                        {% if attendance_courses.has_previous %}
+                            <a href="?search={{ search_query|urlencode }}&page=1">First</a>
+                            <a href="?search={{ search_query|urlencode }}&page={{ attendance_courses.previous_page_number }}">Previous</a>
+                        {% endif %}
+                        <span class="current-page">
+                            Page {{ attendance_courses.number }}
+                            of {{ attendance_courses.paginator.num_pages }}
+                        </span>
+                        {% if attendance_courses.has_next %}
+                            <a href="?search={{ search_query|urlencode }}&page={{ attendance_courses.next_page_number }}">Next</a>
+                            <a href="?search={{ search_query|urlencode }}&page={{ attendance_courses.paginator.num_pages }}">Last</a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+            {% else %}
+
+                <p>
+                    No attendance records match your search.
+                </p>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

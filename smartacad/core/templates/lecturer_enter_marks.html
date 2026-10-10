@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Enter Student Marks - SmartAcad</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #333;
+        }
+
+        header {
+            background: #1e3a5f;
+            color: white;
+            padding: 20px 40px;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            color: #1e3a5f;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        select,
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 15px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 15px;
+        }
+
+        .save-button {
+            background: #1e3a5f;
+            color: white;
+        }
+
+        .back-button {
+            background: #ddd;
+            color: #333;
+            margin-left: 10px;
+        }
+
+        .message {
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            background: #e8f4ff;
+        }
+
+        .student-info {
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>SmartAcad - Enter Student Marks</h1>
+</header>
+
+<div class="container">
+
+    <div class="card">
+
+        <h2>Enter Academic Record</h2>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="course">Course</label>
+
+                <select name="course" id="course" required>
+                    <option value="">Select Course</option>
+
+                    {% for course in courses %}
+                        <option
+                            value="{{ course.id }}"
+                            {% if selected_course and selected_course.id == course.id %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ course.course_code }} -
+                            {{ course.course_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+
+            <div class="form-group">
+                <label for="student">Student</label>
+
+                <select name="student" id="student" required>
+                    <option value="">Select Student</option>
+
+                    {% for student in students %}
+                        <option
+                            value="{{ student.id }}"
+                            {% if selected_student and selected_student.id == student.id %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ student.student_id }} -
+                            {{ student.full_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+
+            <div class="form-group">
+                <label for="marks">Marks</label>
+
+                <input
+                    type="number"
+                    name="marks"
+                    id="marks"
+                    min="0"
+                    max="100"
+                    step="0.01"
+                    placeholder="Enter marks"
+                    required
+                >
+            </div>
+
+
+            <div class="form-group">
+                <label for="grade-preview">Grade (calculated automatically)</label>
+                <input
+                    type="text"
+                    id="grade-preview"
+                    value=""
+                    placeholder="Enter marks to see the grade"
+                    readonly
+                >
+            </div>
+
+
+            <div class="form-group">
+                <label for="semester">Semester</label>
+
+                <select name="semester" id="semester" required>
+                    <option value="">Select Semester</option>
+                    <option value="Semester 1">
+                        Semester 1
+                    </option>
+                    <option value="Semester 2">
+                        Semester 2
+                    </option>
+                    <option value="Semester 3">
+                        Semester 3
+                    </option>
+                </select>
+            </div>
+
+
+            <div class="form-group">
+                <label for="academic_year">
+                    Academic Year
+                </label>
+
+                <input
+                    type="text"
+                    name="academic_year"
+                    id="academic_year"
+                    placeholder="e.g. 2026"
+                    required
+                >
+            </div>
+
+
+            <button
+                type="submit"
+                class="button save-button"
+            >
+                Save Marks
+            </button>
+
+            <a
+                href="{% url 'lecturer_dashboard' %}"
+                class="button back-button"
+            >
+                Back to Dashboard
+            </a>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+    const marksInput = document.getElementById("marks");
+    const gradePreview = document.getElementById("grade-preview");
+
+    marksInput.addEventListener("input", () => {
+        const marks = Number(marksInput.value);
+        if (marksInput.value === "" || Number.isNaN(marks)) {
+            gradePreview.value = "";
+        } else if (marks >= 70) {
+            gradePreview.value = "A";
+        } else if (marks >= 60) {
+            gradePreview.value = "B";
+        } else if (marks >= 50) {
+            gradePreview.value = "C";
+        } else if (marks >= 40) {
+            gradePreview.value = "D";
+        } else {
+            gradePreview.value = "E";
+        }
+    });
+</script>
+
+</body>
+</html>

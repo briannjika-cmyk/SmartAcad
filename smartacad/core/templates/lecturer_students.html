@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Students - SmartAcad</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+        }
+
+        header {
+            background: #1e3a5f;
+            color: white;
+            padding: 20px 40px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .search-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .search-form input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        button,
+        .button {
+            padding: 12px 18px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        button {
+            background: #1e3a5f;
+            color: white;
+        }
+
+        .back {
+            background: #ddd;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #eef3f8;
+            color: #1e3a5f;
+        }
+
+        .action {
+            background: #1e3a5f;
+            color: white;
+        }
+
+        .pagination {
+            margin-top: 25px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .pagination a,
+        .pagination span {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        .current {
+            background: #1e3a5f;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>SmartAcad - Students</h1>
+</header>
+
+<div class="container">
+
+    <div class="card">
+
+        <h2>Search Students</h2>
+
+        <form
+            method="GET"
+            class="search-form"
+        >
+            <input
+                type="text"
+                name="search"
+                value="{{ search_query }}"
+                placeholder="Search by student name or Student ID"
+            >
+
+            <button type="submit">
+                Search
+            </button>
+
+            <a
+                href="{% url 'lecturer_students' %}"
+                class="button back"
+            >
+                Clear
+            </a>
+        </form>
+
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Student ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Programme</th>
+                    <th>Year</th>
+                    <th>GPA</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for student in students %}
+
+                    <tr>
+                        <td>{{ student.student_id }}</td>
+
+                        <td>
+                            {{ student.full_name }}
+                        </td>
+
+                        <td>
+                            {{ student.email }}
+                        </td>
+
+                        <td>
+                            {{ student.programme }}
+                        </td>
+
+                        <td>
+                            {{ student.year_of_study }}
+                        </td>
+
+                        <td>
+                            {{ student.gpa }}
+                        </td>
+
+                        <td>
+                            <a
+                                href="{% url 'lecturer_enter_marks' %}?student_id={{ student.id }}"
+                                class="button action"
+                            >
+                                Enter Marks
+                            </a>
+                        </td>
+                    </tr>
+
+                {% empty %}
+
+                    <tr>
+                        <td colspan="7">
+                            No students found.
+                        </td>
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+
+        {% if students.paginator.num_pages > 1 %}
+
+            <div class="pagination">
+
+                {% if students.has_previous %}
+                    <a
+                        href="?search={{ search_query }}&page=1"
+                    >
+                        First
+                    </a>
+
+                    <a
+                        href="?search={{ search_query }}&page={{ students.previous_page_number }}"
+                    >
+                        Previous
+                    </a>
+                {% endif %}
+
+
+                <span class="current">
+                    Page {{ students.number }}
+                    of
+                    {{ students.paginator.num_pages }}
+                </span>
+
+
+                {% if students.has_next %}
+
+                    <a
+                        href="?search={{ search_query }}&page={{ students.next_page_number }}"
+                    >
+                        Next
+                    </a>
+
+                    <a
+                        href="?search={{ search_query }}&page={{ students.paginator.num_pages }}"
+                    >
+                        Last
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+        {% endif %}
+
+
+        <br>
+
+        <a
+            href="{% url 'lecturer_dashboard' %}"
+            class="button back"
+        >
+            Back to Dashboard
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+</html>

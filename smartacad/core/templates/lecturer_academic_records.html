@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Academic Records - SmartAcad</title>
+
+    <style>
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #333;
+        }
+
+        header {
+            background: #1e3a5f;
+            color: white;
+            padding: 20px 40px;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            color: #1e3a5f;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .search-form input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        .button,
+        button {
+            padding: 12px 18px;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        button {
+            background: #1e3a5f;
+            color: white;
+        }
+
+        .clear-button {
+            background: #ddd;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #1e3a5f;
+            color: white;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        .pagination {
+            margin-top: 25px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .pagination a,
+        .pagination span {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .pagination .current {
+            background: #1e3a5f;
+            color: white;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-top: 25px;
+            background: #ddd;
+            color: #333;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<header>
+
+    <h1>
+        SmartAcad - Academic Records
+    </h1>
+
+</header>
+
+
+<div class="container">
+
+    <div class="card">
+
+        <h2>Academic Records</h2>
+
+
+        <form
+            method="GET"
+            class="search-form"
+        >
+
+            <input
+                type="text"
+                name="search"
+                value="{{ search_query }}"
+                placeholder="Search student name, Student ID or course"
+            >
+
+            <button type="submit">
+                Search
+            </button>
+
+            <a
+                href="{% url 'lecturer_academic_records' %}"
+                class="button clear-button"
+            >
+                Clear
+            </a>
+
+        </form>
+
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Student
+                    </th>
+
+                    <th>
+                        Student ID
+                    </th>
+
+                    <th>
+                        Course
+                    </th>
+
+                    <th>
+                        Semester
+                    </th>
+
+                    <th>
+                        Marks
+                    </th>
+
+                    <th>
+                        Grade
+                    </th>
+
+                    <th>
+                        Academic Year
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for record in records %}
+
+                    <tr>
+
+                        <td>
+                            {{ record.student.full_name }}
+                        </td>
+
+                        <td>
+                            {{ record.student.student_id }}
+                        </td>
+
+                        <td>
+                            {{ record.course_code }} -
+                            {{ record.course_name }}
+                        </td>
+
+                        <td>
+                            {{ record.semester }}
+                        </td>
+
+                        <td>
+                            {{ record.marks }}
+                        </td>
+
+                        <td>
+                            {{ record.grade }}
+                        </td>
+
+                        <td>
+                            {{ record.academic_year }}
+                        </td>
+
+                    </tr>
+
+                {% empty %}
+
+                    <tr>
+
+                        <td colspan="7">
+                            No academic records found.
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+
+        {% if records.paginator.num_pages > 1 %}
+
+            <div class="pagination">
+
+                {% if records.has_previous %}
+
+                    <a
+                        href="?search={{ search_query }}&page=1"
+                    >
+                        First
+                    </a>
+
+                    <a
+                        href="?search={{ search_query }}&page={{ records.previous_page_number }}"
+                    >
+                        Previous
+                    </a>
+
+                {% endif %}
+
+
+                <span class="current">
+
+                    Page
+                    {{ records.number }}
+                    of
+                    {{ records.paginator.num_pages }}
+
+                </span>
+
+
+                {% if records.has_next %}
+
+                    <a
+                        href="?search={{ search_query }}&page={{ records.next_page_number }}"
+                    >
+                        Next
+                    </a>
+
+                    <a
+                        href="?search={{ search_query }}&page={{ records.paginator.num_pages }}"
+                    >
+                        Last
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+        {% endif %}
+
+
+        <a
+            href="{% url 'lecturer_dashboard' %}"
+            class="button back-button"
+        >
+            Back to Dashboard
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

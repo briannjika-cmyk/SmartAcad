@@ -1,0 +1,68 @@
+{
+  "model_type": "RandomForestClassifier",
+  "target": "academic_risk",
+  "labels": [
+    "Low",
+    "Medium",
+    "High"
+  ],
+  "features": [
+    "attendance_percentage",
+    "gpa",
+    "study_hours_per_day",
+    "assignment_completion_percentage",
+    "difficulty_course_concepts",
+    "difficulty_concentration",
+    "difficulty_time_management",
+    "difficulty_language_barriers",
+    "difficulty_learning_resources",
+    "difficulty_exam_anxiety",
+    "difficulty_other",
+    "habit_daily_schedule",
+    "habit_weekly_revision",
+    "habit_group_study",
+    "habit_note_taking",
+    "habit_practice_questions",
+    "habit_online_resources",
+    "habit_seeking_help",
+    "habit_other"
+  ],
+  "training_rows": 1000,
+  "class_counts": {
+    "Low": 663,
+    "Medium": 318,
+    "High": 19
+  },
+  "decision_policy": {
+    "high_risk_threshold": 0.3,
+    "description": "Predict High when its model score meets the threshold; otherwise choose the highest-scoring non-High category."
+  },
+  "validation": {
+    "method": "5-fold stratified cross-validation",
+    "threshold_note": "The High-risk threshold was selected after exploratory evaluation on this dataset; these results are preliminary and need independent validation.",
+    "accuracy": 0.804,
+    "balanced_accuracy": 0.7512,
+    "macro_f1": 0.6929,
+    "per_class": {
+      "Low": {
+        "precision": 0.8905,
+        "recall": 0.8462,
+        "f1": 0.8677,
+        "support": 663.0
+      },
+      "Medium": {
+        "precision": 0.6805,
+        "recall": 0.7233,
+        "f1": 0.7012,
+        "support": 318.0
+      },
+      "High": {
+        "precision": 0.4062,
+        "recall": 0.6842,
+        "f1": 0.5098,
+        "support": 19.0
+      }
+    }
+  },
+  "training_data_sha256": "8e4de7904575a16decf0ccb01e87be6ac7cfaebe6cfa598f34c121eab72b05b5"
+}

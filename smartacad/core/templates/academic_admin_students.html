@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Manage Students - SmartAcad
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+
+            font-family: Arial, sans-serif;
+
+            background-color: #f4f7fb;
+
+            color: #333;
+        }
+
+        .header {
+
+            background-color: #1e3a5f;
+
+            color: white;
+
+            padding: 20px 40px;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+        }
+
+        .header h1 {
+
+            margin: 0;
+
+            font-size: 28px;
+        }
+
+        .logout {
+
+            background-color: white;
+
+            color: #1e3a5f;
+
+            text-decoration: none;
+
+            padding: 10px 18px;
+
+            border-radius: 6px;
+
+            font-weight: bold;
+        }
+
+        .container {
+
+            width: 90%;
+
+            max-width: 1250px;
+
+            margin: 30px auto;
+        }
+
+        .section {
+
+            background-color: white;
+
+            padding: 25px;
+
+            border-radius: 10px;
+
+            box-shadow:
+                0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .section h2 {
+
+            margin-top: 0;
+
+            color: #1e3a5f;
+        }
+
+        .back-button {
+
+            display: inline-block;
+
+            margin-bottom: 20px;
+
+            background-color: #1e3a5f;
+
+            color: white;
+
+            text-decoration: none;
+
+            padding: 10px 16px;
+
+            border-radius: 6px;
+
+            font-weight: bold;
+        }
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+
+            padding: 12px;
+
+            border-bottom:
+                1px solid #ddd;
+
+            text-align: left;
+        }
+
+        th {
+
+            background-color: #1e3a5f;
+
+            color: white;
+        }
+
+        tr:hover {
+
+            background-color: #f7f9fc;
+        }
+
+        .pagination {
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            gap: 8px;
+
+            margin-top: 25px;
+
+            flex-wrap: wrap;
+        }
+
+        .pagination a,
+        .pagination span {
+
+            padding: 8px 13px;
+
+            border-radius: 5px;
+
+            text-decoration: none;
+        }
+
+        .pagination a {
+
+            background-color: #1e3a5f;
+
+            color: white;
+        }
+
+        .pagination a:hover {
+
+            background-color: #162d49;
+        }
+
+        .current-page {
+
+            background-color: #e5eaf0;
+
+            color: #1e3a5f;
+
+            font-weight: bold;
+        }
+
+        .page-info {
+
+            margin-top: 15px;
+
+            color: #666;
+
+            text-align: center;
+        }
+
+        .empty-message {
+
+            color: #666;
+
+            font-style: italic;
+
+        }
+
+        input:not([type="hidden"]),
+        select {
+            width: 100%;
+            padding: 11px 12px;
+            margin: 6px 0 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background: #fff;
+            color: #243449;
+            font: inherit;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #3976b9;
+            box-shadow: 0 0 0 3px rgba(57, 118, 185, 0.16);
+        }
+
+        td select {
+            min-width: 210px;
+            margin: 0 0 8px;
+        }
+
+        .submit-button {
+            background: #1e3a5f;
+            color: white;
+            border: 0;
+            border-radius: 8px;
+            padding: 11px 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+        .submit-button:hover {
+            background: #2b5484;
+            transform: translateY(-1px);
+        }
+
+        .submit-button:focus-visible,
+        .back-button:focus-visible {
+            outline: 3px solid #75b8ff;
+            outline-offset: 2px;
+        }
+
+        .message {
+            padding: 12px;
+            margin-bottom: 15px;
+            background: #e8f4ff;
+            border-radius: 6px;
+        }
+
+        .form-errors {
+            color: #b00020;
+            margin-bottom: 16px;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="header">
+
+        <h1>
+            SmartAcad
+        </h1>
+
+        <a
+            href="{% url 'logout' %}"
+            class="logout"
+        >
+            Logout
+        </a>
+
+    </div>
+
+
+    <div class="container">
+
+
+        <a
+            href="{% url 'academic_admin_dashboard' %}"
+            class="back-button"
+        >
+            ← Back to Dashboard
+        </a>
+
+        {% for message in messages %}
+            <div class="message">{{ message }}</div>
+        {% endfor %}
+
+        <div class="section" style="margin-bottom: 25px;">
+            <h2>Admit Student</h2>
+            {% if not has_programs %}
+                <p>
+                    No program is assigned to your account. Please contact
+                    the system administrator before admitting students.
+                </p>
+            {% else %}
+                <form method="post">
+                    {% csrf_token %}
+                    {% if admission_form.non_field_errors %}
+                        <div class="form-errors">
+                            {{ admission_form.non_field_errors }}
+                        </div>
+                    {% endif %}
+                    {% for field in admission_form %}
+                        <label for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                        </label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <small>{{ field.help_text }}</small>
+                        {% endif %}
+                        {% if field.errors %}
+                            <div class="form-errors">{{ field.errors }}</div>
+                        {% endif %}
+                    {% endfor %}
+                    <button class="submit-button" type="submit">
+                        Admit Student
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+
+        <div class="section">
+
+            <h2>
+                Student Management
+            </h2>
+
+            {% if students %}
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Student ID
+                            </th>
+
+                            <th>
+                                Student Name
+                            </th>
+
+                            <th>
+                                Email
+                            </th>
+
+                            <th>
+                                Programme
+                            </th>
+
+                            <th>
+                                Year
+                            </th>
+
+                            <th>
+                                GPA
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for student in students %}
+
+                            <tr>
+
+                                <td>
+                                    {{ student.student_id }}
+                                </td>
+
+                                <td>
+                                    {{ student.full_name }}
+                                </td>
+
+                                <td>
+                                    {{ student.email }}
+                                </td>
+
+                                <td>
+                                    {{ student.programme }}
+                                </td>
+
+                                <td>
+                                    {{ student.year_of_study }}
+                                </td>
+
+                                <td>
+                                    {{ student.gpa }}
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+
+                <div class="page-info">
+
+                    Page
+                    {{ students.number }}
+                    of
+                    {{ students.paginator.num_pages }}
+
+                </div>
+
+
+                <div class="pagination">
+
+
+                    {% if students.has_previous %}
+
+                        <a
+                            href="?page=1"
+                        >
+                            First
+                        </a>
+
+                        <a
+                            href="?page={{ students.previous_page_number }}"
+                        >
+                            Previous
+                        </a>
+
+                    {% endif %}
+
+
+                    <span class="current-page">
+
+                        Page
+                        {{ students.number }}
+
+                    </span>
+
+
+                    {% if students.has_next %}
+
+                        <a
+                            href="?page={{ students.next_page_number }}"
+                        >
+                            Next
+                        </a>
+
+                        <a
+                            href="?page={{ students.paginator.num_pages }}"
+                        >
+                            Last
+                        </a>
+
+                    {% endif %}
+
+
+                </div>
+
+
+            {% else %}
+
+                <p class="empty-message">
+
+                    No students have been added yet.
+
+                </p>
+
+            {% endif %}
+
+
+        </div>
+
+
+    </div>
+
+
+</body>
+
+</html>

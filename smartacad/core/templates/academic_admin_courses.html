@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assign Courses - SmartAcad</title>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; background: #f4f7fb; color: #243449; }
+        header { padding: 20px 40px; background: linear-gradient(115deg, #1e3a5f, #2c5989); color: white; }
+        header h1 { margin: 0; }
+        main { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        section { padding: 25px; margin-bottom: 25px; background: white; border-radius: 12px; box-shadow: 0 4px 16px #19395712; overflow-x: auto; }
+        h2 { margin-top: 0; color: #1e3a5f; }
+        label { display: block; margin: 12px 0 5px; font-weight: bold; }
+        input, select { width: 100%; padding: 12px; box-sizing: border-box; border: 1px solid #cbd5e1; border-radius: 8px; background: white; color: #243449; font: inherit; transition: border-color .2s, box-shadow .2s; }
+        input:focus, select:focus { outline: none; border-color: #3976b9; box-shadow: 0 0 0 3px #3976b929; }
+        button, .back { display: inline-block; margin-top: 15px; padding: 11px 18px; border: 0; border-radius: 8px; background: #1e3a5f; color: white; font-weight: 700; text-decoration: none; cursor: pointer; transition: background-color .2s, transform .2s; }
+        button:hover, .back:hover { background: #2b5484; transform: translateY(-1px); }
+        table { width: 100%; min-width: 650px; border-collapse: collapse; }
+        th, td { padding: 12px; border-bottom: 1px solid #ddd; text-align: left; }
+        th { background: #1e3a5f; color: white; }
+        .message, .errors { margin: 12px 0; padding: 12px; background: #e8f4ff; border-radius: 8px; }
+        .errors { color: #b00020; background: #ffe5e5; }
+    </style>
+</head>
+<body>
+    <header><h1>SmartAcad - Course and Lecturer Assignment</h1></header>
+    <main>
+        <a class="back" href="{% url 'academic_admin_dashboard' %}">Back to Dashboard</a>
+        {% for message in messages %}<p class="message">{{ message }}</p>{% endfor %}
+        <section>
+            <h2>Create or Assign a Course</h2>
+            <p>Choose an existing course to reassign it, or enter a code, name, and credit value to create a new course. Grade points are derived from each student's result. Every course must belong to a program and a lecturer. Students in that program are enrolled automatically.</p>
+            <form method="post">
+                {% csrf_token %}
+                {% if form.non_field_errors %}<div class="errors">{{ form.non_field_errors }}</div>{% endif %}
+                {% for field in form %}
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}<div class="errors">{{ field.errors }}</div>{% endif %}
+                {% endfor %}
+                <button type="submit">Save Course Assignment</button>
+            </form>
+        </section>
+        <section>
+            <h2>Courses</h2>
+            <table>
+                <thead><tr><th>Course Code</th><th>Course Name</th><th>Credits</th><th>Program</th><th>Lecturer</th></tr></thead>
+                <tbody>
+                    {% for course in courses %}
+                        <tr>
+                            <td>{{ course.course_code }}</td>
+                            <td>{{ course.course_name }}</td>
+                            <td>{{ course.credits }}</td>
+                            <td>{{ course.program|default:"Not assigned" }}</td>
+                            <td>{{ course.lecturer.full_name }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="5">No courses have been assigned.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+</body>
+</html>

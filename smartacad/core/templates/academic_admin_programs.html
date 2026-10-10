@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Programs - SmartAcad</title>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; background: #f4f7fb; color: #243449; }
+        header { padding: 20px 40px; background: linear-gradient(115deg, #1e3a5f, #2c5989); color: white; }
+        header h1 { margin: 0; }
+        main { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
+        section { padding: 25px; margin-bottom: 25px; background: white; border-radius: 12px; box-shadow: 0 4px 16px #19395712; }
+        h2 { margin-top: 0; color: #1e3a5f; }
+        label { display: block; margin: 12px 0 5px; font-weight: bold; }
+        input { width: 100%; padding: 12px; box-sizing: border-box; border: 1px solid #cbd5e1; border-radius: 8px; font: inherit; transition: border-color .2s, box-shadow .2s; }
+        input:focus { outline: none; border-color: #3976b9; box-shadow: 0 0 0 3px #3976b929; }
+        button, .back { display: inline-block; margin-top: 15px; padding: 11px 18px; border: 0; border-radius: 8px; background: #1e3a5f; color: white; font-weight: 700; text-decoration: none; cursor: pointer; transition: background-color .2s, transform .2s; }
+        button:hover, .back:hover { background: #2b5484; transform: translateY(-1px); }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; border-bottom: 1px solid #ddd; text-align: left; }
+        th { background: #1e3a5f; color: white; }
+        .message, .errors { margin: 12px 0; padding: 12px; background: #e8f4ff; border-radius: 8px; }
+        .errors { color: #b00020; background: #ffe5e5; }
+    </style>
+</head>
+<body>
+    <header><h1>SmartAcad - Manage Programs</h1></header>
+    <main>
+        <a class="back" href="{% url 'academic_admin_dashboard' %}">Back to Dashboard</a>
+        {% for message in messages %}<p class="message">{{ message }}</p>{% endfor %}
+        <section>
+            <p>Programs can only be created by a system administrator.</p>
+        </section>
+        <section>
+            <h2>Programs</h2>
+            <table>
+                <thead><tr><th>Program Code</th><th>Program Name</th><th>Academic Admin</th><th>Students</th><th>Courses</th></tr></thead>
+                <tbody>
+                    {% for program in programs %}
+                        <tr>
+                            <td>{{ program.program_code }}</td>
+                            <td>{{ program.name }}</td>
+                            <td>
+                                {% if program.academic_admin %}
+                                    {{ program.academic_admin.get_full_name|default:program.academic_admin.username }}
+                                {% else %}
+                                    Not assigned
+                                {% endif %}
+                            </td>
+                            <td>{{ program.students.count }}</td>
+                            <td>{{ program.courses.count }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="5">No programs have been created.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+</body>
+</html>

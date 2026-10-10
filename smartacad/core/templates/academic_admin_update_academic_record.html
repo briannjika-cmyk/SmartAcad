@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Academic Record - SmartAcad</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #333;
+        }
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 40px;
+            background: #1e3a5f;
+            color: #fff;
+        }
+        header h1 { margin: 0; }
+        .logout, .back, button {
+            display: inline-block;
+            padding: 10px 16px;
+            border: 0;
+            border-radius: 6px;
+            background: #1e3a5f;
+            color: #fff;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .logout { background: #fff; color: #1e3a5f; }
+        main {
+            width: min(90%, 760px);
+            margin: 30px auto;
+        }
+        .card {
+            padding: 28px;
+            border-radius: 10px;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+        }
+        h2 { margin-top: 0; color: #1e3a5f; }
+        .field { margin-bottom: 16px; }
+        label { display: block; margin-bottom: 6px; font-weight: bold; }
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font: inherit;
+        }
+        .errors { color: #a61b1b; }
+        .actions { display: flex; gap: 10px; margin-top: 24px; }
+        .cancel { background: #e8eef5; color: #1e3a5f; }
+        @media (max-width: 600px) {
+            header { padding: 18px 20px; }
+            .card { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>SmartAcad</h1>
+        <a class="logout" href="{% url 'logout' %}">Logout</a>
+    </header>
+    <main>
+        <a class="back" href="{% url 'academic_admin_academic_records' %}">Back to Academic Records</a>
+        <section class="card">
+            <h2>Update Academic Record</h2>
+            <p>Grade is recalculated automatically from the marks entered.</p>
+            <form method="post">
+                {% csrf_token %}
+                {% if form.non_field_errors %}
+                    <div class="errors">{{ form.non_field_errors }}</div>
+                {% endif %}
+                {% for field in form %}
+                    <div class="field">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+                        {% if field.errors %}<div class="errors">{{ field.errors }}</div>{% endif %}
+                    </div>
+                {% endfor %}
+                <div class="actions">
+                    <button type="submit">Save Changes</button>
+                    <a class="back cancel" href="{% url 'academic_admin_academic_records' %}">Cancel</a>
+                </div>
+            </form>
+        </section>
+    </main>
+</body>
+</html>
